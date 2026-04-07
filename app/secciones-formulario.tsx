@@ -1,6 +1,6 @@
 import React from "react";
 import { CheckboxGrid, SeccionDocumento, SelectField, TextArea, TextInput } from "./componentes-formulario";
-import { SignatureCanvas } from "./firma-canvas";
+import { FirmaCanvas, VistaFirma } from "./firma-canvas";
 import { opcionesAccesos, opcionesEpp, listaHoras, listaMinutos, opcionesRiesgos, opcionesSiNo, opcionesTipoDocumento, opcionesTipoTrabajo, horaActual, minutoActual } from "./configuracion-formulario";
 
 type Interventor = {
@@ -10,6 +10,7 @@ type Interventor = {
   aptoAlturas: string;
   certificadoTsa: string;
   firma: string;
+  firmaImagen?: string;
 };
 
 function BloqueSeleccionHora({
@@ -124,7 +125,12 @@ export function SeccionInterventores({
             {opcionesSiNo.map((item: string) => <option key={item}>{item}</option>)}
           </SelectField>
         </div>
-        <SignatureCanvas label="Firma" value={interventorEnEdicion.firma} onChange={(value) => setInterventorEnEdicion((current) => ({ ...current, firma: value }))} />
+        <FirmaCanvas
+          label="Firma"
+          value={interventorEnEdicion.firma}
+          onChange={(value) => setInterventorEnEdicion((current) => ({ ...current, firma: value }))}
+          onImageChange={(value) => setInterventorEnEdicion((current) => ({ ...current, firmaImagen: value }))}
+        />
         <button type="button" className="btn btn--primary" onClick={agregarInterventor} style={{ width: "fit-content", alignSelf: "center", marginTop: "16px", whiteSpace: "nowrap" }}>
           AGREGAR INTERVENTOR
         </button>
@@ -154,13 +160,9 @@ export function SeccionInterventores({
                   <td>{interventor.aptoAlturas}</td>
                   <td>{interventor.certificadoTsa}</td>
                   <td>
-                    {interventor.firma ? (
-                      <img
-                        src={interventor.firma}
-                        alt={`Firma de ${interventor.nombre}`}
-                        className="firma-tabla"
-                      />
-                    ) : null}
+                    <div className="firma-tabla">
+                      {interventor.firmaImagen ? <img src={interventor.firmaImagen} alt={`Firma de ${interventor.nombre}`} className="firma-tabla-visual" /> : null}
+                    </div>
                   </td>
                   <td>
                     <button type="button" className="btn btn--delete" style={{ background: "#dc2626", color: "#fff", borderColor: "#dc2626" }} onClick={() => setInterventores((current) => current.filter((_, currentIndex) => currentIndex !== index))}>
@@ -291,12 +293,12 @@ export function SeccionFirmas({
       <div className="final-signature-stack">
         <TarjetaFirmaResponsable>
           <TextInput label="Nombre de la persona que autoriza el trabajo" type="text" required error={erroresCampos["Nombre de la persona que autoriza el trabajo"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} />
-          <SignatureCanvas label="Firma" value={firmaQuienAutoriza} onChange={setFirmaQuienAutoriza} />
+          <FirmaCanvas label="Firma" value={firmaQuienAutoriza} onChange={setFirmaQuienAutoriza} />
         </TarjetaFirmaResponsable>
         <TarjetaFirmaResponsable>
           <TextInput label="Cédula de ciudadanía del responsable del área" type="text" inputMode="numeric" required error={erroresCampos["Cédula de ciudadanía del responsable del área"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/\D/g, "")} />
           <TextInput label="Nombre del responsable de área" type="text" required error={erroresCampos["Nombre del responsable de área"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} />
-          <SignatureCanvas label="Firma del responsable del área" value={firmaResponsableArea} onChange={setFirmaResponsableArea} />
+          <FirmaCanvas label="Firma del responsable del área" value={firmaResponsableArea} onChange={setFirmaResponsableArea} />
         </TarjetaFirmaResponsable>
       </div>
       <div className="declaration-box declaration-box--full">

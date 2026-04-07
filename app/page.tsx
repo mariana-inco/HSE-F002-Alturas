@@ -11,7 +11,10 @@ type Interventor = {
   aptoAlturas: string;
   certificadoTsa: string;
   firma: string;
+  firmaImagen?: string;
 };
+
+type PuntosFirma = Record<string, number[][]>;
 
 export default function Page() {
   const [activeSection, setActiveSection] = useState(1);
@@ -67,6 +70,33 @@ export default function Page() {
     enlace: firma ? referencia : "",
     puntos: firma ? firma.length : 0,
   });
+
+  const convertirFirmaAImagen = (firma: string) => {
+    if (!firma) return "";
+    try {
+      const puntos = JSON.parse(firma) as PuntosFirma;
+      const rutas = Object.values(puntos)
+        .filter((path) => path.length > 1)
+        .map((path) => {
+          const xs = path.map(([x]) => x);
+          const ys = path.map(([, y]) => y);
+          const minX = Math.min(...xs);
+          const minY = Math.min(...ys);
+          const maxX = Math.max(...xs);
+          const maxY = Math.max(...ys);
+          const ancho = Math.max(maxX - minX, 1);
+          const alto = Math.max(maxY - minY, 1);
+          const escala = Math.min(140 / ancho, 44 / alto);
+          const puntosAjustados = path.map(([x, y]) => `${((x - minX) * escala + 5).toFixed(2)},${((y - minY) * escala + 8).toFixed(2)}`).join(" ");
+          return `<polyline points="${puntosAjustados}" fill="none" stroke="#111827" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`;
+        });
+      if (!rutas.length) return "";
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 60" width="150" height="60">${rutas.join("")}</svg>`;
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    } catch {
+      return "";
+    }
+  };
 
   const tomarCampo = (campos: Record<string, string | boolean>, etiqueta: string) => {
     const valor = campos[etiqueta];
@@ -234,8 +264,18 @@ export default function Page() {
       setErroresCampos({});
       setInterventores((current) => [
         ...current,
-        { ...interventorEnEdicion },
+        { ...interventorEnEdicion, firmaImagen: convertirFirmaAImagen(interventorEnEdicion.firma) },
       ]);
+      setInterventorEnEdicion({
+        documento: "",
+        nombre: "",
+        tipoDocumento: "CC",
+        aptoAlturas: "Sí",
+        certificadoTsa: "Sí",
+        firma: "",
+      });
+      setAvisoValidacion("");
+      setErroresCampos({});
     };
 
   return (

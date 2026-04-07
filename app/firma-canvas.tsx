@@ -1,135 +1,113 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Signature, { getStroke, getSvgPathFromStroke, type SignatureRef } from "@uiw/react-signature";
 
-type SignatureCanvasProps = {
+type PuntosFirma = Record<string, number[][]>;
+
+type FirmaProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  onImageChange?: (value: string) => void;
 };
 
-export function SignatureCanvas({ label, value, onChange }: SignatureCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const drawing = useRef(false);
-  const suppressRedraw = useRef(false);
+type VistaFirmaProps = {
+  value: string;
+  className?: string;
+  readonly?: boolean;
+};
+
+const leerPuntos = (value: string): PuntosFirma => {
+  if (!value) return {};
+  try {
+    const parsed = JSON.parse(value) as PuntosFirma;
+    if (parsed && typeof parsed === "object") return parsed;
+  } catch {
+    return {};
+  }
+  return {};
+};
+
+const crearPuntosSerializados = (points: number[][], currentValue: string) => {
+  const existentes = leerPuntos(currentValue);
+  const nextIndex = Object.keys(existentes).length + 1;
+  return JSON.stringify({
+    ...existentes,
+    [`path-${nextIndex}`]: points,
+  });
+};
+
+const escalarPuntos = (puntos: PuntosFirma, ancho = 150, alto = 60, margen = 8) => {
+  const todasLasPuntos = Object.values(puntos).flat();
+  if (todasLasPuntos.length === 0) return puntos;
+
+  const xs = todasLasPuntos.map(([x]) => x);
+  const ys = todasLasPuntos.map(([, y]) => y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const anchoOriginal = Math.max(maxX - minX, 1);
+  const altoOriginal = Math.max(maxY - minY, 1);
+  const escala = Math.min((ancho - margen * 2) / anchoOriginal, (alto - margen * 2) / altoOriginal);
+
+  return Object.fromEntries(
+    Object.entries(puntos).map(([clave, puntosPath]) => [
+      clave,
+      puntosPath.map(([x, y]) => [
+        (x - minX) * escala + margen,
+        (y - minY) * escala + margen,
+      ]),
+    ]),
+  ) as PuntosFirma;
+};
+
+const svgToDataUrl = (svg: SVGSVGElement | null) => {
+  if (!svg) return "";
+  const serializer = new XMLSerializer();
+  const svgText = serializer.serializeToString(svg);
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+};
+
+export function FirmaCanvas({ label, value, onChange, onImageChange }: FirmaProps) {
+  const signatureRef = useRef<SignatureRef | null>(null);
   const [hasDrawn, setHasDrawn] = useState(Boolean(value));
-
-  const paintSavedSignature = () => {
-    const canvas = canvasRef.current;
-    const wrapper = wrapperRef.current;
-    if (!canvas || !wrapper || !value) return;
-    const ratio = window.devicePixelRatio || 1;
-    const width = wrapper.clientWidth;
-    canvas.width = width * ratio;
-    canvas.height = 210 * ratio;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = "210px";
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    ctx.clearRect(0, 0, width, 210);
-    const image = new Image();
-    image.onload = () => {
-      ctx.clearRect(0, 0, width, 210);
-      ctx.drawImage(image, 0, 0, width, 210);
-    };
-    image.src = value;
-  };
-
-  const resizeCanvas = (shouldPaintValue = true) => {
-    const canvas = canvasRef.current;
-    const wrapper = wrapperRef.current;
-    if (!canvas || !wrapper) return;
-    const ratio = window.devicePixelRatio || 1;
-    const width = wrapper.clientWidth;
-    canvas.width = width * ratio;
-    canvas.height = 210 * ratio;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = "210px";
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#111827";
-    if (shouldPaintValue && value) paintSavedSignature();
-  };
-
-  useEffect(() => {
-    resizeCanvas();
-    const observer = new ResizeObserver(() => resizeCanvas());
-    if (wrapperRef.current) observer.observe(wrapperRef.current);
-    return () => observer.disconnect();
-  }, []);
+  const puntos = useMemo(() => leerPuntos(value), [value]);
 
   useEffect(() => {
     setHasDrawn(Boolean(value));
-    if (!drawing.current && !suppressRedraw.current) {
-      resizeCanvas(true);
-    }
   }, [value]);
 
-  const pointerPosition = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
-    const rect = canvas.getBoundingClientRect();
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
-  };
-
-  const start = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    drawing.current = true;
-    canvas.setPointerCapture(event.pointerId);
-    const { x, y } = pointerPosition(event);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  };
-
-  const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!drawing.current) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    const { x, y } = pointerPosition(event);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    const nextValue = canvas.toDataURL("image/png");
-    setHasDrawn(true);
-    onChange(nextValue);
-  };
-
-  const stop = () => {
-    drawing.current = false;
-  };
-
   const clear = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    suppressRedraw.current = true;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    signatureRef.current?.clear();
     setHasDrawn(false);
     onChange("");
-    resizeCanvas(false);
-    window.setTimeout(() => {
-      suppressRedraw.current = false;
-    }, 0);
   };
 
   return (
-    <div className="signature-block" ref={wrapperRef}>
+    <div className="signature-block">
       <div className="signature-block__label">{label}</div>
-      <canvas
-        ref={canvasRef}
-        className={`signature-canvas ${hasDrawn ? "signature-canvas--success" : "signature-canvas--pending"}`}
-        onPointerDown={start}
-        onPointerMove={draw}
-        onPointerUp={stop}
-        onPointerLeave={stop}
-      />
+      <div className={`signature-wrapper ${hasDrawn ? "signature-canvas--success" : "signature-canvas--pending"}`}>
+        <Signature
+          key={value || "firma-vacia"}
+          ref={signatureRef}
+          defaultPoints={puntos}
+          width="100%"
+          height={210}
+          onPointer={(points) => {
+            if (!points.length) return;
+            const nextValue = crearPuntosSerializados(points, value);
+            setHasDrawn(true);
+            onChange(nextValue);
+            window.setTimeout(() => {
+              onImageChange?.(svgToDataUrl(signatureRef.current?.svg || null));
+            }, 0);
+          }}
+          className="signature-canvas signature-canvas--uiw"
+          options={{ size: 4, thinning: 0.6, smoothing: 0.5, streamline: 0.6 }}
+        />
+      </div>
       <div className={`signature-status ${hasDrawn ? "signature-status--success" : "signature-status--pending"}`}>
         {hasDrawn ? "✓ Firma registrada" : "⌛ Pendiente"}
       </div>
@@ -138,6 +116,34 @@ export function SignatureCanvas({ label, value, onChange }: SignatureCanvasProps
           Limpiar firma
         </button>
       </div>
+    </div>
+  );
+}
+
+export function VistaFirma({ value, className = "", readonly = true }: VistaFirmaProps) {
+  const puntos = useMemo(() => leerPuntos(value), [value]);
+  const puntosEscalados = useMemo(() => escalarPuntos(puntos), [puntos]);
+  const rutas = useMemo(
+    () =>
+      Object.values(puntosEscalados)
+        .map((path) => getSvgPathFromStroke(getStroke(path, { size: 3, thinning: 0.5, smoothing: 0.5, streamline: 0.5 })))
+        .filter(Boolean),
+    [puntosEscalados],
+  );
+
+  const firmaSvg = useMemo(() => {
+    if (!rutas.length) return "";
+    const contenido = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 60" width="150" height="60">
+        ${rutas.map((d) => `<path d="${d}" fill="#111827" />`).join("")}
+      </svg>
+    `;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(contenido)}`;
+  }, [rutas]);
+
+  return (
+    <div className={`signature-preview ${className}`.trim()}>
+      {firmaSvg ? <img src={firmaSvg} alt="Firma" className="firma-tabla-visual" /> : null}
     </div>
   );
 }
