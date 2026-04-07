@@ -1,65 +1,230 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useEffect, useRef, useState } from "react";
+import { etiquetasPasos } from "./configuracion-formulario";
+import { SeccionATS, SeccionDatosGenerales, SeccionEpp, SeccionFirmas, SeccionInterventores, SeccionMateriales } from "./secciones-formulario";
+
+type Interventor = {
+  documento: string;
+  nombre: string;
+  tipoDocumento: string;
+  aptoAlturas: string;
+  certificadoTsa: string;
+  firma: string;
+};
+
+export default function Page() {
+  const [activeSection, setActiveSection] = useState(1);
+
+  const [interventorEnEdicion, setInterventorEnEdicion] = useState<Interventor>({
+    documento: "",
+    nombre: "",
+    tipoDocumento: "CC",
+    aptoAlturas: "Sí",
+    certificadoTsa: "Sí",
+    firma: "",
+  });
+  const [interventores, setInterventores] = useState<Interventor[]>([]);
+  const [riesgosSeleccionados, setRiesgosSeleccionados] = useState<string[]>([]);
+  const [elementosProteccionSeleccionados, setElementosProteccionSeleccionados] = useState<string[]>([]);
+  const [sistemasAccesoSeleccionados, setSistemasAccesoSeleccionados] = useState<string[]>([]);
+  const [declaracionAceptada, setDeclaracionAceptada] = useState(false);
+  const [firmaQuienAutoriza, setFirmaQuienAutoriza] = useState("");
+  const [firmaResponsableArea, setFirmaResponsableArea] = useState("");
+  const [avisoValidacion, setAvisoValidacion] = useState<string>("");
+  const [erroresCampos, setErroresCampos] = useState<Record<string, string>>({});
+  const totalSections = 6;
+  const progress = (activeSection / totalSections) * 100;
+  const stepTitle = etiquetasPasos[activeSection - 1];
+  const limpiarErrorCampo = (label: string) => {
+    setErroresCampos((current) => {
+      if (!current[label]) return current;
+      const next = { ...current };
+      delete next[label];
+      return next;
+    });
+    setAvisoValidacion((current) => (current.includes(label) ? "" : current));
+  };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeSection]);
+
+  const nextSection = () => {
+    const validateRequiredFields = (selector: string) => {
+      const container = document.querySelector(selector);
+      if (!container) return [] as string[];
+      const inputs = Array.from(container.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea"));
+      const missing: string[] = [];
+      for (const field of inputs) {
+        if (!field.required) continue;
+        if (field instanceof HTMLInputElement && field.type === "checkbox") {
+          if (!field.checked) {
+            missing.push(field.getAttribute("data-label") || "un campo obligatorio");
+          }
+          continue;
+        }
+        if (!field.checkValidity()) {
+          missing.push(field.getAttribute("data-label") || "un campo obligatorio");
+        }
+      }
+      return missing;
+    };
+
+    const missingGeneral = validateRequiredFields("#datos-generales");
+    const missingInterventor = validateRequiredFields("#interventores");
+    const missingFinal = validateRequiredFields("#firmas");
+
+    if (activeSection === 1 && missingGeneral.length) {
+      setAvisoValidacion(`Falta completar: ${missingGeneral[0]}.`);
+      setErroresCampos(Object.fromEntries(missingGeneral.map((label) => [label, `Falta completar: ${label}.`])));
+      return;
+    }
+    if (activeSection === 2 && missingInterventor.length) {
+      setAvisoValidacion(`Falta completar: ${missingInterventor[0]}.`);
+      setErroresCampos(Object.fromEntries(missingInterventor.map((label) => [label, `Falta completar: ${label}.`])));
+      return;
+    }
+    if (activeSection === 3 && riesgosSeleccionados.length === 0) {
+      setErroresCampos({});
+      setAvisoValidacion("Falta completar: selecciona al menos una condición de seguridad.");
+      return;
+    }
+    const missingEpp = validateRequiredFields("#epp");
+    if (activeSection === 4 && (missingEpp.length || elementosProteccionSeleccionados.length === 0 || sistemasAccesoSeleccionados.length === 0)) {
+      setAvisoValidacion(
+        missingEpp.length
+          ? `Falta completar: ${missingEpp[0]}.`
+          : "Falta completar: selecciona al menos un EPP y un sistema de acceso."
+      );
+      setErroresCampos({});
+      return;
+    }
+    if (activeSection === 5 && !declaracionAceptada) {
+      setErroresCampos({});
+      setAvisoValidacion("Falta completar: debes aceptar la declaración para continuar.");
+      return;
+    }
+    if (activeSection === 6 && (missingFinal.length || !firmaQuienAutoriza || !firmaResponsableArea)) {
+      setAvisoValidacion(`Falta completar: ${missingFinal[0] || "las firmas finales"}.`);
+      setErroresCampos(Object.fromEntries(missingFinal.map((label) => [label, `Falta completar: ${label}.`])));
+      return;
+    }
+    setAvisoValidacion("");
+    setErroresCampos({});
+    setActiveSection((current) => Math.min(current + 1, totalSections));
+  };
+  const prevSection = () => setActiveSection((current) => Math.max(current - 1, 1));
+
+  const addInterventor = () =>
+    {
+      const missing: string[] = [];
+      if (!interventorEnEdicion.documento) missing.push("Número de documento");
+      if (!interventorEnEdicion.nombre) missing.push("Nombre y apellido");
+      if (!interventorEnEdicion.tipoDocumento) missing.push("Tipo de documento");
+      if (!interventorEnEdicion.aptoAlturas) missing.push("Es apto para laborar en alturas");
+      if (!interventorEnEdicion.certificadoTsa) missing.push("Está certificado para TSA");
+      if (!interventorEnEdicion.firma) missing.push("Firma");
+      if (missing.length) {
+        setAvisoValidacion(`Falta completar: ${missing[0]}.`);
+        setErroresCampos(Object.fromEntries(missing.map((label) => [label, `Falta completar: ${label}.`])));
+        return;
+      }
+      setAvisoValidacion("");
+      setErroresCampos({});
+      setInterventores((current) => [
+        ...current,
+        { ...interventorEnEdicion },
+      ]);
+    };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="page-shell">
+      <div className="page-frame">
+        <section className="doc-top">
+          <div className="doc-header-table">
+            <div className="doc-header-logo">
+              <div className="doc-logo-text">ROCA</div>
+            </div>
+            <div className="doc-header-center">
+              <div className="doc-header-title-top">GESTION HSE</div>
+              <div className="doc-header-title-main">PERMISO PARA TRABAJOS EN ALTURAS</div>
+            </div>
+            <div className="doc-header-meta">
+              <div><strong>Codigo:</strong> HSE-F002</div>
+              <div><strong>Fecha:</strong> 2026-04-06</div>
+              <div><strong>Version:</strong> 01</div>
+            </div>
+          </div>
+        </section>
+
+        <div className="section-card stepper-card">
+          <div className="stepper">
+            <div className="stepper__meta">
+              <div className="stepper__title">{stepTitle}</div>
+              <div className="stepper__label">Paso {activeSection} de {totalSections}</div>
+            </div>
+            <div className="stepper__bar">
+              <div className="progress-bar" style={{ width: `${progress}%` }} />
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <form className="doc-form">
+          {activeSection === 1 && <SeccionDatosGenerales erroresCampos={erroresCampos} limpiarErrorCampo={limpiarErrorCampo} />}
+          {activeSection === 2 && (
+            <SeccionInterventores
+              erroresCampos={erroresCampos}
+              limpiarErrorCampo={limpiarErrorCampo}
+              interventorEnEdicion={interventorEnEdicion}
+              setInterventorEnEdicion={setInterventorEnEdicion}
+              agregarInterventor={addInterventor}
+              interventores={interventores}
+              setInterventores={setInterventores}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          )}
+          {activeSection === 3 && <SeccionMateriales riesgosSeleccionados={riesgosSeleccionados} setRiesgosSeleccionados={setRiesgosSeleccionados} />}
+          {activeSection === 4 && (
+            <SeccionEpp
+              elementosProteccionSeleccionados={elementosProteccionSeleccionados}
+              sistemasAccesoSeleccionados={sistemasAccesoSeleccionados}
+              setElementosProteccionSeleccionados={setElementosProteccionSeleccionados}
+              setSistemasAccesoSeleccionados={setSistemasAccesoSeleccionados}
+            />
+          )}
+          {activeSection === 5 && (
+            <SeccionATS declaracionAceptada={declaracionAceptada} setDeclaracionAceptada={setDeclaracionAceptada} avisoValidacion={avisoValidacion} />
+          )}
+          {activeSection === 6 && (
+            <SeccionFirmas
+              erroresCampos={erroresCampos}
+              limpiarErrorCampo={limpiarErrorCampo}
+              firmaQuienAutoriza={firmaQuienAutoriza}
+              setFirmaQuienAutoriza={setFirmaQuienAutoriza}
+              firmaResponsableArea={firmaResponsableArea}
+              setFirmaResponsableArea={setFirmaResponsableArea}
+              declaracionAceptada={declaracionAceptada}
+              setDeclaracionAceptada={setDeclaracionAceptada}
+            />
+          )}
+
+            <div className="wizard-actions">
+              <button type="button" className="btn btn--ghost" onClick={prevSection} disabled={activeSection === 1}>
+                Anterior
+              </button>
+                {activeSection < totalSections ? (
+                <button type="button" className="btn btn--primary" onClick={nextSection} disabled={activeSection === 5 && !declaracionAceptada}>
+                  Siguiente
+                </button>
+              ) : (
+                <button type="button" className="btn btn--primary" disabled={!declaracionAceptada}>
+                  Enviar formulario
+                </button>
+              )}
+            </div>
+            {avisoValidacion && activeSection === 6 ? <p className="field-helper field-helper--error">{avisoValidacion}</p> : null}
+          </form>
+      </div>
+    </main>
   );
 }
