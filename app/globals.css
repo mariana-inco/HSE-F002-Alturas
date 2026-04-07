@@ -396,6 +396,14 @@ body {
   color: #64748b;
 }
 
+.firma-tabla {
+  display: block;
+  max-width: 100%;
+  max-height: 56px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
 .subsection-title {
   margin-bottom: 14px;
   padding-bottom: 0;
@@ -708,7 +716,7 @@ body {
   .checkbox-grid,
   .ats-table__head,
   .ats-table__row {
-    grid-template-columns: 2fr;
+    grid-template-columns: 1fr;
   }
 
   .doc-header-table {
@@ -731,7 +739,164 @@ body {
     font-size: 24px;
   }
 
+  .doc-header-table {
+    text-align: center;
+  }
+
+  .doc-header-logo,
+  .doc-header-center,
+  .doc-header-meta {
+    padding: 18px 16px;
+  }
+
+  .doc-logo-text {
+    width: 96px;
+    height: 84px;
+    font-size: 22px;
+  }
+
+  .stepper {
+    top: 30px;
+    padding: 14px 14px 16px;
+    border-radius: 20px;
+  }
+
+  .stepper__title {
+    font-size: 18px;
+  }
+
+  .stepper__label {
+    font-size: 15px;
+  }
+
+  .section-card,
+  .doc-top,
+  .doc-section,
+  .card,
+  .alert-box,
+  .declaration-box {
+    border-radius: 18px;
+  }
+
+  .doc-form {
+    gap: 14px;
+  }
+
+  .doc-section {
+    padding: 18px 12px 12px;
+  }
+
+  .grid {
+    gap: 12px;
+  }
+
+  .field__label {
+    font-size: 12px;
+  }
+
+  .field__input {
+    font-size: 16px;
+    min-height: 46px;
+  }
+
+  .field__textarea {
+    min-height: 96px;
+  }
+
+  .card {
+    padding: 18px 16px;
+  }
+
+  .section-note,
+  .alert-box,
+  .declaration-box {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .signature-block {
+    width: 100%;
+  }
+
+  .signature-canvas {
+    min-height: 180px;
+    height: 180px;
+    border-radius: 18px;
+  }
+
+  .signature-actions {
+    flex-wrap: wrap;
+  }
+
   .wizard-actions {
     flex-direction: column;
+    padding-top: 14px;
+  }
+
+  .wizard-actions .btn {
+    width: 100%;
+  }
+
+  .table-wrap {
+    border-radius: 14px;
+  }
+
+  .data-table {
+    min-width: 920px;
+  }
+
+  .ats-head {
+    font-size: 20px;
+  }
+
+  .ats-head--small {
+    font-size: 11px;
+  }
+
+  .ats-fixed-cell {
+    min-height: 120px;
+    font-size: 13px;
+  }
+
+  .final-signature-stack {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-shell {
+    padding: 34px 8px 16px;
+  }
+
+  .progress-wrap {
+    left: 8px;
+    right: 8px;
+    top: 8px;
+  }
+
+  .stepper {
+    top: 28px;
+  }
+
+  .doc-header-title-main {
+    font-size: 20px;
+  }
+
+  .doc-header-title-top {
+    font-size: 16px;
+  }
+
+  .doc-header-meta > div {
+    font-size: 13px;
+  }
+
+  .section-note,
+  .alert-box__strong,
+  .declaration-box {
+    font-size: 13px;
+  }
+
+  .subsection-title {
+    font-size: 17px;
   }
 }

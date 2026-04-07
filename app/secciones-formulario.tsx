@@ -70,7 +70,17 @@ export function SeccionDatosGenerales({
         <BloqueSeleccionHora label="Hora de finalización del trabajo" dataLabel="Hora de finalización del trabajo" horario={horaActual} minutosLista={minutoActual} />
         <TextInput label="Responsable del área" type="text" required error={erroresCampos["Responsable del área"]} onFieldChange={limpiarErrorCampo} />
         <TextInput label="Responsable de diligenciar el permiso" type="text" required error={erroresCampos["Responsable de diligenciar el permiso"]} onFieldChange={limpiarErrorCampo} />
-        <TextInput label="Altura del trabajo (metros)" type="text" inputMode="decimal" required error={erroresCampos["Altura del trabajo (metros)"]} onFieldChange={limpiarErrorCampo} />
+        <TextInput
+          label="Altura del trabajo (metros)"
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          maxLength={5}
+          required
+          error={erroresCampos["Altura del trabajo (metros)"]}
+          onFieldChange={limpiarErrorCampo}
+          sanitize={(value) => value.replace(/\D/g, "")}
+        />
         <TextInput label="Lugar donde se realizará el trabajo" type="text" wrapperClassName="field--full" required error={erroresCampos["Lugar donde se realizará el trabajo"]} onFieldChange={limpiarErrorCampo} />
         <TextArea label="Descripción y procedimiento del trabajo" rows={5} required error={erroresCampos["Descripción y procedimiento del trabajo"]} onFieldChange={limpiarErrorCampo} />
       </div>
@@ -143,7 +153,15 @@ export function SeccionInterventores({
                   <td>{interventor.documento}</td>
                   <td>{interventor.aptoAlturas}</td>
                   <td>{interventor.certificadoTsa}</td>
-                  <td>{interventor.firma ? "Firma" : ""}</td>
+                  <td>
+                    {interventor.firma ? (
+                      <img
+                        src={interventor.firma}
+                        alt={`Firma de ${interventor.nombre}`}
+                        className="firma-tabla"
+                      />
+                    ) : null}
+                  </td>
                   <td>
                     <button type="button" className="btn btn--delete" style={{ background: "#dc2626", color: "#fff", borderColor: "#dc2626" }} onClick={() => setInterventores((current) => current.filter((_, currentIndex) => currentIndex !== index))}>
                       Eliminar
