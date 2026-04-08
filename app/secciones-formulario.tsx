@@ -293,19 +293,75 @@ export function SeccionATS({
 export function SeccionFirmas({
   erroresCampos,
   limpiarErrorCampo,
+  cedulaPersonaAutorizaTrabajo,
+  setCedulaPersonaAutorizaTrabajo,
   firmaQuienAutoriza,
   setFirmaQuienAutoriza,
+  cargoPersonaAutorizaTrabajo,
+  setCargoPersonaAutorizaTrabajo,
+  nombrePersonaAutorizaTrabajo,
+  setNombrePersonaAutorizaTrabajo,
+  cedulaResponsableArea,
+  setCedulaResponsableArea,
   firmaResponsableArea,
   setFirmaResponsableArea,
+  cargoResponsableArea,
+  setCargoResponsableArea,
+  nombreResponsableArea,
+  setNombreResponsableArea,
+  cedulaCoordinador,
+  setCedulaCoordinador,
+  nombreCoordinador,
+  setNombreCoordinador,
+  cargoCoordinador,
+  setCargoCoordinador,
+  firmaCoordinador,
+  setFirmaCoordinador,
+  cedulaPlanEmergencia,
+  setCedulaPlanEmergencia,
+  nombrePlanEmergencia,
+  setNombrePlanEmergencia,
+  cargoPlanEmergencia,
+  setCargoPlanEmergencia,
+  firmaPlanEmergencia,
+  setFirmaPlanEmergencia,
   declaracionAceptada,
   setDeclaracionAceptada,
 }: {
   erroresCampos: Record<string, string>;
   limpiarErrorCampo: (label: string) => void;
+  cedulaPersonaAutorizaTrabajo: string;
+  setCedulaPersonaAutorizaTrabajo: React.Dispatch<React.SetStateAction<string>>;
   firmaQuienAutoriza: string;
   setFirmaQuienAutoriza: React.Dispatch<React.SetStateAction<string>>;
+  cargoPersonaAutorizaTrabajo: string;
+  setCargoPersonaAutorizaTrabajo: React.Dispatch<React.SetStateAction<string>>;
+  nombrePersonaAutorizaTrabajo: string;
+  setNombrePersonaAutorizaTrabajo: React.Dispatch<React.SetStateAction<string>>;
+  cedulaResponsableArea: string;
+  setCedulaResponsableArea: React.Dispatch<React.SetStateAction<string>>;
   firmaResponsableArea: string;
   setFirmaResponsableArea: React.Dispatch<React.SetStateAction<string>>;
+  cargoResponsableArea: string;
+  setCargoResponsableArea: React.Dispatch<React.SetStateAction<string>>;
+  nombreResponsableArea: string;
+  setNombreResponsableArea: React.Dispatch<React.SetStateAction<string>>;
+  cedulaCoordinador: string;
+  setCedulaCoordinador: React.Dispatch<React.SetStateAction<string>>;
+  nombreCoordinador: string;
+  setNombreCoordinador: React.Dispatch<React.SetStateAction<string>>;
+  cargoCoordinador: string;
+  setCargoCoordinador: React.Dispatch<React.SetStateAction<string>>;
+  firmaCoordinador: string;
+  setFirmaCoordinador: React.Dispatch<React.SetStateAction<string>>;
+  cedulaPlanEmergencia: string;
+  setCedulaPlanEmergencia: React.Dispatch<React.SetStateAction<string>>;
+  nombrePlanEmergencia: string;
+  setNombrePlanEmergencia: React.Dispatch<React.SetStateAction<string>>;
+  cargoPlanEmergencia: string;
+  setCargoPlanEmergencia: React.Dispatch<React.SetStateAction<string>>;
+  firmaPlanEmergencia: string;
+  setFirmaPlanEmergencia: React.Dispatch<React.SetStateAction<string>>;
   declaracionAceptada: boolean;
   setDeclaracionAceptada: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -313,13 +369,40 @@ export function SeccionFirmas({
     <SeccionDocumento id="firmas" sectionRef={{ current: null }}>
       <div className="final-signature-stack">
         <TarjetaFirmaResponsable>
-          <TextInput label="Nombre de la persona que autoriza el trabajo" type="text" required error={erroresCampos["Nombre de la persona que autoriza el trabajo"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} />
+          <div className="subsection-title">Persona que autoriza el trabajo</div>
+          <div className="grid grid--2">
+            <TextInput label="Cédula de ciudadanía de la persona que autoriza el trabajo" type="text" inputMode="numeric" required error={erroresCampos["Cédula de ciudadanía de la persona que autoriza el trabajo"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/\D/g, "")} value={cedulaPersonaAutorizaTrabajo} onChange={(event) => setCedulaPersonaAutorizaTrabajo(event.target.value)} />
+            <TextInput label="Nombre de la persona que autoriza el trabajo" type="text" required error={erroresCampos["Nombre de la persona que autoriza el trabajo"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={nombrePersonaAutorizaTrabajo} onChange={(event) => setNombrePersonaAutorizaTrabajo(event.target.value)} />
+            <TextInput label="Cargo de la persona que autoriza el trabajo" type="text" required error={erroresCampos["Cargo de la persona que autoriza el trabajo"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={cargoPersonaAutorizaTrabajo} onChange={(event) => setCargoPersonaAutorizaTrabajo(event.target.value)} />
+          </div>
           <FirmaCanvas label="Firma" value={firmaQuienAutoriza} onChange={setFirmaQuienAutoriza} />
         </TarjetaFirmaResponsable>
         <TarjetaFirmaResponsable>
-          <TextInput label="Cédula de ciudadanía del responsable del área" type="text" inputMode="numeric" required error={erroresCampos["Cédula de ciudadanía del responsable del área"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/\D/g, "")} />
-          <TextInput label="Nombre del responsable de área" type="text" required error={erroresCampos["Nombre del responsable de área"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} />
+          <div className="subsection-title">Responsable del área</div>
+          <div className="grid grid--2">
+            <TextInput label="Cédula de ciudadanía del responsable del área" type="text" inputMode="numeric" required error={erroresCampos["Cédula de ciudadanía del responsable del área"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/\D/g, "")} value={cedulaResponsableArea} onChange={(event) => setCedulaResponsableArea(event.target.value)} />
+            <TextInput label="Nombre del responsable de área" type="text" required error={erroresCampos["Nombre del responsable de área"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={nombreResponsableArea} onChange={(event) => setNombreResponsableArea(event.target.value)} />
+            <TextInput label="Cargo del responsable de área" type="text" required error={erroresCampos["Cargo del responsable de área"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={cargoResponsableArea} onChange={(event) => setCargoResponsableArea(event.target.value)} />
+          </div>
           <FirmaCanvas label="Firma del responsable del área" value={firmaResponsableArea} onChange={setFirmaResponsableArea} />
+        </TarjetaFirmaResponsable>
+        <TarjetaFirmaResponsable>
+          <div className="subsection-title">Coordinador de trabajos en alturas</div>
+          <div className="grid grid--2">
+            <TextInput label="Cédula de ciudadanía del coordinador de trabajos en alturas" type="text" inputMode="numeric" required error={erroresCampos["Cédula de ciudadanía del coordinador de trabajos en alturas"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/\D/g, "")} value={cedulaCoordinador} onChange={(event) => setCedulaCoordinador(event.target.value)} />
+            <TextInput label="Nombre del coordinador de trabajos en alturas" type="text" required error={erroresCampos["Nombre del coordinador de trabajos en alturas"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={nombreCoordinador} onChange={(event) => setNombreCoordinador(event.target.value)} />
+            <TextInput label="Cargo del coordinador de trabajos en alturas" type="text" required error={erroresCampos["Cargo del coordinador de trabajos en alturas"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={cargoCoordinador} onChange={(event) => setCargoCoordinador(event.target.value)} />
+          </div>
+          <FirmaCanvas label="Firma del coordinador de trabajos en alturas" value={firmaCoordinador} onChange={setFirmaCoordinador} />
+        </TarjetaFirmaResponsable>
+        <TarjetaFirmaResponsable>
+          <div className="subsection-title">Responsable de activar el plan de emergencias</div>
+          <div className="grid grid--2">
+            <TextInput label="Cédula de ciudadanía de la persona responsable de activar el plan de emergencias" type="text" inputMode="numeric" required error={erroresCampos["Cédula de ciudadanía de la persona responsable de activar el plan de emergencias"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/\D/g, "")} value={cedulaPlanEmergencia} onChange={(event) => setCedulaPlanEmergencia(event.target.value)} />
+            <TextInput label="Nombre de la persona responsable de activar el plan de emergencias" type="text" required error={erroresCampos["Nombre de la persona responsable de activar el plan de emergencias"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={nombrePlanEmergencia} onChange={(event) => setNombrePlanEmergencia(event.target.value)} />
+            <TextInput label="Cargo de la persona responsable de activar el plan de emergencias" type="text" required error={erroresCampos["Cargo de la persona responsable de activar el plan de emergencias"]} onFieldChange={limpiarErrorCampo} sanitize={(value) => value.replace(/[0-9]/g, "")} value={cargoPlanEmergencia} onChange={(event) => setCargoPlanEmergencia(event.target.value)} />
+          </div>
+          <FirmaCanvas label="Firma" value={firmaPlanEmergencia} onChange={setFirmaPlanEmergencia} />
         </TarjetaFirmaResponsable>
       </div>
       <div className="declaration-box declaration-box--full">

@@ -33,8 +33,22 @@ export default function Page() {
   const [sistemasAccesoSeleccionados, setSistemasAccesoSeleccionados] = useState<string[]>([]);
   const [declaracionATS, setDeclaracionATS] = useState(false);
   const [declaracionFinal, setDeclaracionFinal] = useState(false);
+  const [cedulaPersonaAutorizaTrabajo, setCedulaPersonaAutorizaTrabajo] = useState("");
+  const [nombrePersonaAutorizaTrabajo, setNombrePersonaAutorizaTrabajo] = useState("");
+  const [cargoPersonaAutorizaTrabajo, setCargoPersonaAutorizaTrabajo] = useState("");
   const [firmaQuienAutoriza, setFirmaQuienAutoriza] = useState("");
+  const [cedulaResponsableArea, setCedulaResponsableArea] = useState("");
+  const [nombreResponsableArea, setNombreResponsableArea] = useState("");
+  const [cargoResponsableArea, setCargoResponsableArea] = useState("");
   const [firmaResponsableArea, setFirmaResponsableArea] = useState("");
+  const [cedulaCoordinador, setCedulaCoordinador] = useState("");
+  const [nombreCoordinador, setNombreCoordinador] = useState("");
+  const [cargoCoordinador, setCargoCoordinador] = useState("");
+  const [firmaCoordinador, setFirmaCoordinador] = useState("");
+  const [cedulaPlanEmergencia, setCedulaPlanEmergencia] = useState("");
+  const [nombrePlanEmergencia, setNombrePlanEmergencia] = useState("");
+  const [cargoPlanEmergencia, setCargoPlanEmergencia] = useState("");
+  const [firmaPlanEmergencia, setFirmaPlanEmergencia] = useState("");
   const [avisoValidacion, setAvisoValidacion] = useState<string>("");
   const [erroresCampos, setErroresCampos] = useState<Record<string, string>>({});
   const totalSections = 6;
@@ -152,11 +166,22 @@ export default function Page() {
       },
     },
     firmasYAprobacion: {
-      nombrePersonaAutorizaTrabajo: tomarCampo(leerCamposSeccion("#firmas"), "Nombre de la persona que autoriza el trabajo"),
+      cedulaPersonaAutorizaTrabajo,
+      nombrePersonaAutorizaTrabajo,
+      cargoPersonaAutorizaTrabajo,
       firmaPersonaAutorizaTrabajo: resumirFirma(firmaQuienAutoriza, "firma://persona-autoriza"),
-      cedulaCiudadaniaResponsableArea: tomarCampo(leerCamposSeccion("#firmas"), "Cédula de ciudadanía del responsable del área"),
-      nombreResponsableArea: tomarCampo(leerCamposSeccion("#firmas"), "Nombre del responsable de área"),
+      cedulaCiudadaniaResponsableArea: cedulaResponsableArea,
+      nombreResponsableArea,
+      cargoResponsableArea,
       firmaResponsableArea: resumirFirma(firmaResponsableArea, "firma://responsable-area"),
+      cedulaCoordinadorTrabajoAlturas: cedulaCoordinador,
+      nombreCoordinadorTrabajoAlturas: nombreCoordinador,
+      cargoCoordinadorTrabajoAlturas: cargoCoordinador,
+      firmaCoordinadorTrabajoAlturas: resumirFirma(firmaCoordinador, "firma://coordinador-alturas"),
+      cedulaResponsablePlanEmergencias: cedulaPlanEmergencia,
+      nombreResponsablePlanEmergencias: nombrePlanEmergencia,
+      cargoResponsablePlanEmergencias: cargoPlanEmergencia,
+      firmaResponsablePlanEmergencias: resumirFirma(firmaPlanEmergencia, "firma://plan-emergencias"),
       declaracionAceptada: declaracionFinal,
     },
   });
@@ -174,6 +199,18 @@ export default function Page() {
   useEffect(() => {
     setDeclaracionATS(false);
     setDeclaracionFinal(false);
+    setCedulaPersonaAutorizaTrabajo("");
+    setNombrePersonaAutorizaTrabajo("");
+    setCargoPersonaAutorizaTrabajo("");
+    setCedulaResponsableArea("");
+    setNombreResponsableArea("");
+    setCargoResponsableArea("");
+    setCedulaCoordinador("");
+    setNombreCoordinador("");
+    setCargoCoordinador("");
+    setCedulaPlanEmergencia("");
+    setNombrePlanEmergencia("");
+    setCargoPlanEmergencia("");
   }, []);
 
   const nextSection = () => {
@@ -333,10 +370,38 @@ export default function Page() {
             <SeccionFirmas
               erroresCampos={erroresCampos}
               limpiarErrorCampo={limpiarErrorCampo}
+              cedulaPersonaAutorizaTrabajo={cedulaPersonaAutorizaTrabajo}
+              setCedulaPersonaAutorizaTrabajo={setCedulaPersonaAutorizaTrabajo}
               firmaQuienAutoriza={firmaQuienAutoriza}
               setFirmaQuienAutoriza={setFirmaQuienAutoriza}
+              cargoPersonaAutorizaTrabajo={cargoPersonaAutorizaTrabajo}
+              setCargoPersonaAutorizaTrabajo={setCargoPersonaAutorizaTrabajo}
+              nombrePersonaAutorizaTrabajo={nombrePersonaAutorizaTrabajo}
+              setNombrePersonaAutorizaTrabajo={setNombrePersonaAutorizaTrabajo}
+              cedulaResponsableArea={cedulaResponsableArea}
+              setCedulaResponsableArea={setCedulaResponsableArea}
               firmaResponsableArea={firmaResponsableArea}
               setFirmaResponsableArea={setFirmaResponsableArea}
+              cargoResponsableArea={cargoResponsableArea}
+              setCargoResponsableArea={setCargoResponsableArea}
+              nombreResponsableArea={nombreResponsableArea}
+              setNombreResponsableArea={setNombreResponsableArea}
+              cedulaCoordinador={cedulaCoordinador}
+              setCedulaCoordinador={setCedulaCoordinador}
+              nombreCoordinador={nombreCoordinador}
+              setNombreCoordinador={setNombreCoordinador}
+              cargoCoordinador={cargoCoordinador}
+              setCargoCoordinador={setCargoCoordinador}
+              firmaCoordinador={firmaCoordinador}
+              setFirmaCoordinador={setFirmaCoordinador}
+              cedulaPlanEmergencia={cedulaPlanEmergencia}
+              setCedulaPlanEmergencia={setCedulaPlanEmergencia}
+              nombrePlanEmergencia={nombrePlanEmergencia}
+              setNombrePlanEmergencia={setNombrePlanEmergencia}
+              cargoPlanEmergencia={cargoPlanEmergencia}
+              setCargoPlanEmergencia={setCargoPlanEmergencia}
+              firmaPlanEmergencia={firmaPlanEmergencia}
+              setFirmaPlanEmergencia={setFirmaPlanEmergencia}
               declaracionAceptada={declaracionFinal}
               setDeclaracionAceptada={setDeclaracionFinal}
             />
