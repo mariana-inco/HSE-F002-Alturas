@@ -107,7 +107,7 @@ export default function Page() {
     encabezado: {
       codigo: "HSE-F002",
       fecha: "2026-04-06",
-      version: "01",
+      version: "11",
     },
     datosGenerales: (() => {
       const campos = leerCamposSeccion("#datos-generales");
@@ -293,7 +293,7 @@ export default function Page() {
             <div className="doc-header-meta">
               <div><strong>Codigo:</strong> HSE-F002</div>
               <div><strong>Fecha:</strong> 2026-04-06</div>
-              <div><strong>Version:</strong> 01</div>
+              <div><strong>Version:</strong> 11</div>
             </div>
           </div>
         </section>
