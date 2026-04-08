@@ -198,17 +198,11 @@ export default function Page() {
     };
 
     const missingGeneral = validateRequiredFields("#datos-generales");
-    const missingInterventor = validateRequiredFields("#interventores");
     const missingFinal = validateRequiredFields("#firmas");
 
     if (activeSection === 1 && missingGeneral.length) {
       setAvisoValidacion(`Falta completar: ${missingGeneral[0]}.`);
       setErroresCampos(Object.fromEntries(missingGeneral.map((label) => [label, `Falta completar: ${label}.`])));
-      return;
-    }
-    if (activeSection === 2 && missingInterventor.length) {
-      setAvisoValidacion(`Falta completar: ${missingInterventor[0]}.`);
-      setErroresCampos(Object.fromEntries(missingInterventor.map((label) => [label, `Falta completar: ${label}.`])));
       return;
     }
     if (activeSection === 3 && riesgosSeleccionados.length === 0) {

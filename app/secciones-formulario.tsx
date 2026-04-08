@@ -58,32 +58,52 @@ export function SeccionDatosGenerales({
 }) {
   return (
     <SeccionDocumento id="datos-generales" sectionRef={{ current: null }}>
-      <div className="grid grid--2">
-        <SelectField label="Tipo de trabajo" defaultValue="" required error={erroresCampos["Tipo de trabajo"]} onFieldChange={limpiarErrorCampo}>
-          <option value="" disabled>Seleccione...</option>
-          {opcionesTipoTrabajo.map((item: string) => <option key={item}>{item}</option>)}
-        </SelectField>
-        <TextInput label="Centro de operación" type="text" required error={erroresCampos["Centro de operación"]} onFieldChange={limpiarErrorCampo} />
-        <TextInput label="Ciudad" type="text" required error={erroresCampos["Ciudad"]} onFieldChange={limpiarErrorCampo} />
-        <TextInput label="Fecha de inicio del trabajo" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required error={erroresCampos["Fecha de inicio del trabajo"]} onFieldChange={limpiarErrorCampo} />
-        <BloqueSeleccionHora label="Hora de inicio del trabajo" dataLabel="Hora de inicio del trabajo" horario={horaActual} minutosLista={minutoActual} />
-        <TextInput label="Fecha de terminación del trabajo" type="date" required error={erroresCampos["Fecha de terminación del trabajo"]} onFieldChange={limpiarErrorCampo} />
-        <BloqueSeleccionHora label="Hora de finalización del trabajo" dataLabel="Hora de finalización del trabajo" horario={horaActual} minutosLista={minutoActual} />
-        <TextInput label="Responsable del área" type="text" required error={erroresCampos["Responsable del área"]} onFieldChange={limpiarErrorCampo} />
-        <TextInput label="Responsable de diligenciar el permiso" type="text" required error={erroresCampos["Responsable de diligenciar el permiso"]} onFieldChange={limpiarErrorCampo} />
-        <TextInput
-          label="Altura del trabajo (metros)"
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={5}
-          required
-          error={erroresCampos["Altura del trabajo (metros)"]}
-          onFieldChange={limpiarErrorCampo}
-          sanitize={(value) => value.replace(/\D/g, "")}
-        />
-        <TextInput label="Lugar donde se realizará el trabajo" type="text" wrapperClassName="field--full" required error={erroresCampos["Lugar donde se realizará el trabajo"]} onFieldChange={limpiarErrorCampo} />
-        <TextArea label="Descripción y procedimiento del trabajo" rows={5} required error={erroresCampos["Descripción y procedimiento del trabajo"]} onFieldChange={limpiarErrorCampo} />
+      <div className="stack">
+        <div className="card">
+          <div className="subsection-title">Ubicación y fechas</div>
+          <p className="subsection-description">Completa primero el lugar y las fechas del permiso.</p>
+          <div className="grid grid--2">
+            <TextInput label="Ciudad" type="text" required error={erroresCampos["Ciudad"]} onFieldChange={limpiarErrorCampo} />
+            <TextInput label="Fecha de inicio del trabajo" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required error={erroresCampos["Fecha de inicio del trabajo"]} onFieldChange={limpiarErrorCampo} />
+            <BloqueSeleccionHora label="Hora de inicio del trabajo" dataLabel="Hora de inicio del trabajo" horario={horaActual} minutosLista={minutoActual} />
+            <TextInput label="Fecha de terminación del trabajo" type="date" required error={erroresCampos["Fecha de terminación del trabajo"]} onFieldChange={limpiarErrorCampo} />
+            <BloqueSeleccionHora label="Hora de finalización del trabajo" dataLabel="Hora de finalización del trabajo" horario={horaActual} minutosLista={minutoActual} />
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="subsection-title">Persona y operación</div>
+          <p className="subsection-description">Identifica a quién se concede el permiso y dónde se ejecutará.</p>
+          <div className="grid grid--2">
+            <SelectField label="Tipo de trabajo" defaultValue="" required error={erroresCampos["Tipo de trabajo"]} onFieldChange={limpiarErrorCampo}>
+              <option value="" disabled>Seleccione...</option>
+              {opcionesTipoTrabajo.map((item: string) => <option key={item}>{item}</option>)}
+            </SelectField>
+            <TextInput label="Centro de operación" type="text" required error={erroresCampos["Centro de operación"]} onFieldChange={limpiarErrorCampo} />
+            <TextInput label="Responsable del área" type="text" required error={erroresCampos["Responsable del área"]} onFieldChange={limpiarErrorCampo} />
+            <TextInput label="Responsable de diligenciar el permiso" type="text" required error={erroresCampos["Responsable de diligenciar el permiso"]} onFieldChange={limpiarErrorCampo} />
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="subsection-title">Detalles del trabajo</div>
+          <p className="subsection-description">Describe la actividad y las condiciones necesarias para ejecutarla.</p>
+          <div className="grid grid--2">
+            <TextInput
+              label="Altura del trabajo (metros)"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={5}
+              required
+              error={erroresCampos["Altura del trabajo (metros)"]}
+              onFieldChange={limpiarErrorCampo}
+              sanitize={(value) => value.replace(/\D/g, "")}
+            />
+            <TextInput label="Lugar donde se realizará el trabajo" type="text" wrapperClassName="field--full" required error={erroresCampos["Lugar donde se realizará el trabajo"]} onFieldChange={limpiarErrorCampo} />
+            <TextArea label="Descripción y procedimiento del trabajo" rows={5} required error={erroresCampos["Descripción y procedimiento del trabajo"]} onFieldChange={limpiarErrorCampo} />
+          </div>
+        </div>
       </div>
     </SeccionDocumento>
   );
@@ -108,7 +128,7 @@ export function SeccionInterventores({
 }) {
   return (
     <SeccionDocumento id="interventores" sectionRef={{ current: null }}>
-      <div className="section-note">
+      <div className="section-note section-note--accent">
         RELACIONE CON NOMBRE Y NÚMERO DE CÉDULA A LAS PERSONAS QUE INTERVIENEN EN EL PERMISO Y EJECUCIÓN DEL TRABAJO
       </div>
       <div className="worker-actions">
@@ -134,6 +154,7 @@ export function SeccionInterventores({
         <button type="button" className="btn btn--primary" onClick={agregarInterventor} style={{ width: "fit-content", alignSelf: "center", marginTop: "16px", whiteSpace: "nowrap" }}>
           AGREGAR INTERVENTOR
         </button>
+        <p className="section-note section-note--soft">Si no vas a agregar más interventores, puedes continuar con el botón Siguiente.</p>
       </div>
       <div className="table-wrap">
         <table className="data-table">
