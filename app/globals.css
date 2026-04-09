@@ -685,6 +685,42 @@ body {
   color: #17355f;
 }
 
+.ats-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.ats-editor-input,
+.ats-editor-textarea {
+  width: 100%;
+  border: 1px solid #cfd8e3;
+  border-radius: 12px;
+  background: #fff;
+  color: #17355f;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.35;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+.ats-editor-input {
+  min-height: 42px;
+}
+
+.ats-editor-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.ats-editor-input:focus,
+.ats-editor-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
 .ats-fixed-cell {
   padding: 16px 14px;
   min-height: 150px;

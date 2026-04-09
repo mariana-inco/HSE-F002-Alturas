@@ -253,10 +253,34 @@ export function SeccionATS({
   declaracionAceptada,
   setDeclaracionAceptada,
   avisoValidacion,
+  editarTablaATS,
+  setEditarTablaATS,
+  tablaATS,
+  setTablaATS,
 }: {
   declaracionAceptada: boolean;
   setDeclaracionAceptada: React.Dispatch<React.SetStateAction<boolean>>;
   avisoValidacion: string;
+  editarTablaATS: boolean;
+  setEditarTablaATS: React.Dispatch<React.SetStateAction<boolean>>;
+  tablaATS: {
+    encabezadoPasoAPaso: string;
+    encabezadoPeligros: string;
+    encabezadoAcciones: string;
+    pasoAPasoDelTrabajo: string;
+    identificarPeligros: string;
+    accionesYControles: string;
+  };
+  setTablaATS: React.Dispatch<
+    React.SetStateAction<{
+      encabezadoPasoAPaso: string;
+      encabezadoPeligros: string;
+      encabezadoAcciones: string;
+      pasoAPasoDelTrabajo: string;
+      identificarPeligros: string;
+      accionesYControles: string;
+    }>
+  >;
 }) {
   return (
     <SeccionDocumento id="ats" sectionRef={{ current: null }}>
@@ -268,15 +292,90 @@ export function SeccionATS({
       <div className="ats-head ats-head--small">DESCRIBA EL PASO A PASO DE SU ACTIVIDAD A REALIZAR IDENTIFICANDO SUS RIESGOS Y MEDIDAS DE CONTROL</div>
       <div className="ats-table">
         <div className="ats-table__head">
-          <div>1. PASO A PASO DEL TRABAJO / DESCRIPCIÓN DE LA TAREA</div>
-          <div>2. IDENTIFICAR PELIGROS / CONSECUENCIAS PRODUCTO DEL TRABAJO, QUE PUEDE FALLAR</div>
-          <div>3. ACCIONES / CONTROLES O PROCEDIMIENTOS RECOMENDADOS / PARA MINIMIZAR EL PELIGRO AL QUE SE VA A EXPONER</div>
+          <div>
+            {editarTablaATS ? (
+              <input
+                className="ats-editor-input"
+                value={tablaATS.encabezadoPasoAPaso}
+                onChange={(event) => setTablaATS((current) => ({ ...current, encabezadoPasoAPaso: event.target.value }))}
+                aria-label="Encabezado 1 ATS"
+              />
+            ) : (
+              tablaATS.encabezadoPasoAPaso
+            )}
+          </div>
+          <div>
+            {editarTablaATS ? (
+              <input
+                className="ats-editor-input"
+                value={tablaATS.encabezadoPeligros}
+                onChange={(event) => setTablaATS((current) => ({ ...current, encabezadoPeligros: event.target.value }))}
+                aria-label="Encabezado 2 ATS"
+              />
+            ) : (
+              tablaATS.encabezadoPeligros
+            )}
+          </div>
+          <div>
+            {editarTablaATS ? (
+              <input
+                className="ats-editor-input"
+                value={tablaATS.encabezadoAcciones}
+                onChange={(event) => setTablaATS((current) => ({ ...current, encabezadoAcciones: event.target.value }))}
+                aria-label="Encabezado 3 ATS"
+              />
+            ) : (
+              tablaATS.encabezadoAcciones
+            )}
+          </div>
         </div>
         <div className="ats-table__row">
-          <div className="ats-fixed-cell">Diligenciamiento de permiso de trabajo y ATS, inspección de los elementos de protección personal y equipos, traslado e inspección al sitio de trabajo con equipos y herramientas, instalación de EPCC para trabajos en alturas, inicio de la actividad, orden y aseo del sitio, cierre del permiso y término de la actividad.</div>
-          <div className="ats-fixed-cell">Caídas a distinto nivel, caídas de objetos, proyección de partículas, exposición a material particulado y humos metálicos, sobreesfuerzos, posturas inadecuadas, movimientos repetitivos, exposición a ruido, exposición a radiaciones por temperaturas extremas, condiciones de la tarea y fenómenos naturales.</div>
-          <div className="ats-fixed-cell">Entrenamiento en trabajo en alturas, señalización del área, plan de emergencias, permisos de trabajo, uso de EPPs y equipos de protección contra caídas, charlas de seguridad, capacitaciones en trabajos en alturas y caliente, inspección al sitio de trabajo y mecanismos de anclaje, inspección a equipos de soldadura y oxicorte.</div>
+          <div className="ats-fixed-cell">
+            {editarTablaATS ? (
+              <textarea
+                className="ats-editor-textarea"
+                value={tablaATS.pasoAPasoDelTrabajo}
+                onChange={(event) => setTablaATS((current) => ({ ...current, pasoAPasoDelTrabajo: event.target.value }))}
+                aria-label="Paso a paso ATS"
+              />
+            ) : (
+              tablaATS.pasoAPasoDelTrabajo
+            )}
+          </div>
+          <div className="ats-fixed-cell">
+            {editarTablaATS ? (
+              <textarea
+                className="ats-editor-textarea"
+                value={tablaATS.identificarPeligros}
+                onChange={(event) => setTablaATS((current) => ({ ...current, identificarPeligros: event.target.value }))}
+                aria-label="Identificar peligros ATS"
+              />
+            ) : (
+              tablaATS.identificarPeligros
+            )}
+          </div>
+          <div className="ats-fixed-cell">
+            {editarTablaATS ? (
+              <textarea
+                className="ats-editor-textarea"
+                value={tablaATS.accionesYControles}
+                onChange={(event) => setTablaATS((current) => ({ ...current, accionesYControles: event.target.value }))}
+                aria-label="Acciones y controles ATS"
+              />
+            ) : (
+              tablaATS.accionesYControles
+            )}
+          </div>
         </div>
+      </div>
+      <div className="ats-actions">
+        <button
+          type="button"
+          className="btn btn--ghost"
+          onClick={() => setEditarTablaATS((current) => !current)}
+        >
+          {editarTablaATS ? "Guardar tabla" : "Editar tabla"}
+        </button>
       </div>
       <div className="declaration-box">
         <span>DECLARO QUE SOMOS CONSCIENTES DE LA RESPONSABILIDAD Y DESPUÉS DE TENER EVALUADOS LOS PELIGROS INHERENTES AL TRABAJO A SER REALIZADO AUTORIZO SU EJECUCIÓN SIEMPRE SEGUIDO DE LAS PRECAUCIONES Y DEFINICIONES ACORDADAS EN CONJUNTO CON EL TRABAJADOR(ES) QUE EJECUTAN LA TAREA. (CONSTATO QUE HE VERIFICADO QUE TODAS LAS RECOMENDACIONES DE SEGURIDAD AQUÍ CONTEMPLADAS CUMPLEN CON LOS REQUISITOS ESTABLECIDOS) ACATAREMOS LAS NORMAS, PROCEDIMIENTOS Y RECOMENDACIONES MENCIONADOS POR EL PERSONAL HSE, PARA EL SEGURO DESARROLLO DE LA LABOR.</span>

@@ -18,6 +18,15 @@ type PuntosFirma = Record<string, number[][]>;
 
 export default function Page() {
   const [activeSection, setActiveSection] = useState(1);
+  const [editarTablaATS, setEditarTablaATS] = useState(false);
+  const [tablaATS, setTablaATS] = useState({
+    encabezadoPasoAPaso: "1. PASO A PASO DEL TRABAJO / DESCRIPCIÓN DE LA TAREA",
+    encabezadoPeligros: "2. IDENTIFICAR PELIGROS / CONSECUENCIAS PRODUCTO DEL TRABAJO, QUE PUEDE FALLAR",
+    encabezadoAcciones: "3. ACCIONES / CONTROLES O PROCEDIMIENTOS RECOMENDADOS / PARA MINIMIZAR EL PELIGRO AL QUE SE VA A EXPONER",
+    pasoAPasoDelTrabajo: "Diligenciamiento de permiso de trabajo y ATS, inspección de los elementos de protección personal y equipos, traslado e inspección al sitio de trabajo con equipos y herramientas, instalación de EPCC para trabajos en alturas, inicio de la actividad, orden y aseo del sitio, cierre del permiso y término de la actividad.",
+    identificarPeligros: "Caídas a distinto nivel, caídas de objetos, proyección de partículas, exposición a material particulado y humos metálicos, sobreesfuerzos, posturas inadecuadas, movimientos repetitivos, exposición a ruido, exposición a radiaciones por temperaturas extremas, condiciones de la tarea y fenómenos naturales.",
+    accionesYControles: "Entrenamiento en trabajo en alturas, señalización del área, plan de emergencias, permisos de trabajo, uso de EPPs y equipos de protección contra caídas, charlas de seguridad, capacitaciones en trabajos en alturas y caliente, inspección al sitio de trabajo y mecanismos de anclaje, inspección a equipos de soldadura y oxicorte.",
+  });
 
   const [interventorEnEdicion, setInterventorEnEdicion] = useState<Interventor>({
     documento: "",
@@ -160,9 +169,12 @@ export default function Page() {
     ats: {
       declaracionAceptada: declaracionATS,
       tabla: {
-        pasoAPasoDelTrabajo: "Diligenciamiento de permiso de trabajo y ATS, inspección de los elementos de protección personal y equipos, traslado e inspección al sitio de trabajo con equipos y herramientas, instalación de EPCC para trabajos en alturas, inicio de la actividad, orden y aseo del sitio, cierre del permiso y término de la actividad.",
-        identificarPeligros: "Caídas a distinto nivel, caídas de objetos, proyección de partículas, exposición a material particulado y humos metálicos, sobreesfuerzos, posturas inadecuadas, movimientos repetitivos, exposición a ruido, exposición a radiaciones por temperaturas extremas, condiciones de la tarea y fenómenos naturales.",
-        accionesYControles: "Entrenamiento en trabajo en alturas, señalización del área, plan de emergencias, permisos de trabajo, uso de EPPs y equipos de protección contra caídas, charlas de seguridad, capacitaciones en trabajos en alturas y caliente, inspección al sitio de trabajo y mecanismos de anclaje, inspección a equipos de soldadura y oxicorte.",
+        encabezadoPasoAPaso: tablaATS.encabezadoPasoAPaso,
+        encabezadoPeligros: tablaATS.encabezadoPeligros,
+        encabezadoAcciones: tablaATS.encabezadoAcciones,
+        pasoAPasoDelTrabajo: tablaATS.pasoAPasoDelTrabajo,
+        identificarPeligros: tablaATS.identificarPeligros,
+        accionesYControles: tablaATS.accionesYControles,
       },
     },
     firmasYAprobacion: {
@@ -364,7 +376,15 @@ export default function Page() {
             />
           )}
           {activeSection === 5 && (
-            <SeccionATS declaracionAceptada={declaracionATS} setDeclaracionAceptada={setDeclaracionATS} avisoValidacion={avisoValidacion} />
+            <SeccionATS
+              declaracionAceptada={declaracionATS}
+              setDeclaracionAceptada={setDeclaracionATS}
+              avisoValidacion={avisoValidacion}
+              editarTablaATS={editarTablaATS}
+              setEditarTablaATS={setEditarTablaATS}
+              tablaATS={tablaATS}
+              setTablaATS={setTablaATS}
+            />
           )}
           {activeSection === 6 && (
             <SeccionFirmas
